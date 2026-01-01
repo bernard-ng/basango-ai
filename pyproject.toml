@@ -1,0 +1,48 @@
+[project]
+name = "basango-ai"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "bernard-ng", email = "ngandubernard@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.28.1",
+    "prefect>=3.6.8",
+    "pydantic>=2.12.5",
+    "spacy>=3.7.0",
+    "fr-core-news-lg @ https://github.com/explosion/spacy-models/releases/download/fr_core_news_lg-3.7.0/fr_core_news_lg-3.7.0-py3-none-any.whl",
+    "transformers>=4.57.3",
+    "typer>=0.20.1",
+    "torch>=2.1.0,<2.3",
+    "numpy>=1.26,<2.0",
+]
+
+[project.scripts]
+basango-ai = "basango_ai:main"
+
+[build-system]
+requires = ["uv_build>=0.8.12,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.407",
+    "pytest>=9.0.2",
+    "ruff>=0.14.10",
+]
+
+[tool.pyright]
+pythonVersion = "3.11"
+typeCheckingMode = "basic"
+reportMissingImports = "none"
+reportMissingModuleSource = "none"
+useLibraryCodeForTypes = true
+include = ["src"]
+
+[tool.ruff]
+# Keep defaults and additionally ignore notebooks
+extend-exclude = [
+    "**/*.ipynb",
+]
