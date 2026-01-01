@@ -1,38 +1,28 @@
 from __future__ import annotations
 
-from typing import Iterable, List
+from typing import List
 
 import spacy
 
-from basango_ai.core.types import ArticleRecord
+from basango_ai.core.constants import CONCURRENCY
 
 LABELS = {"PER", "LOC", "ORG", "GPE", "MISC"}
+
 
 class SpacyNerPredictor:
     def __init__(self) -> None:
         self.nlp = spacy.load("fr_core_news_lg")
 
-    def predict(self, articles: Iterable[ArticleRecord]) -> List[dict]:
-        articles = list(articles)
-        texts = [article.content or article.title for article in articles]
-        if not texts:
-            return []
-
-        docs = list(self.nlp.pipe(texts))
-        results = []
-        for article, doc in zip(articles, docs):
-            entities = [
-                {
-                    "text": ent.text,
-                    "label": ent.label_,
-                    "start": ent.start_char,
-                    "end": ent.end_char,
-                }
+    def predict(self, texts: List[str]) -> List[dict]:
+        docs = self.nlp.pipe(texts, batch_size=256, n_process=CONCURRENCY)
+        return [
+            [
+                {"text": ent.text, "label": ent.label_}
                 for ent in doc.ents
                 if ent.label_ in LABELS
             ]
-            results.append({"id": article.id, "entities": entities})
-        return results
+            for doc in docs
+        ]
 
 
 def load_model() -> SpacyNerPredictor:
